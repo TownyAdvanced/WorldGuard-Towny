@@ -1,0 +1,5 @@
+  name: WorldGuard-Towny
+  main: TownyWorldGuard
+  version: "1.0"
+  depend:
+    - WorldGuard

@@ -1,4 +1,5 @@
 
+import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.event.PreNewTownEvent;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -9,6 +10,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,9 +40,9 @@ public class TownyListener implements Listener {
         ApplicableRegionSet set = regions.getApplicableRegions(loc);
 
         // Check the flag.
-        if (!set.testState(wgPlayer, TownyWorldGuard.getTownCreationAllowedFlag())) {
+        if (!set.testState(wgPlayer, WorldGuardTowny.getTownCreationAllowedFlag())) {
             // Cancel Town creation
-            event.setCancelMessage("Your not allowed to create a town in this region.");
+            event.setCancelMessage(ChatColor.RED + "[WorldGuard-Towny]" + "You're not allowed to create a town in this region.");
             event.setCancelled(true);
         }
     }

@@ -37,8 +37,7 @@
             <groupId>com.palmergames.bukkit.towny</groupId>
             <artifactId>Towny</artifactId>
             <version>0.95.2.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/Towny-0.95.2.5.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

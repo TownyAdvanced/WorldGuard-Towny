@@ -6,7 +6,7 @@
 
     <groupId>dev.siris</groupId>
     <artifactId>WorldGuard-Towny</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
 
     <repositories>
         <repository>
@@ -16,6 +16,10 @@
         <repository>
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -34,9 +38,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.palmergames.bukkit.towny</groupId>
+            <groupId>com.github.TownyAdvanced</groupId>
             <artifactId>Towny</artifactId>
-            <version>0.95.2.5</version>
+            <version>0.97.5.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

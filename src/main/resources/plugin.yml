@@ -4,4 +4,4 @@
   depend:
     - Towny
     - WorldGuard
-  api-version: "1.13"
+  api-version: 1.13

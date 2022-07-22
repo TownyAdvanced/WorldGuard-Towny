@@ -17,6 +17,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class TownyListener implements Listener {
+    WorldGuardTowny plugin;
+
+    public TownyListener(WorldGuardTowny plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onTownCreate(PreNewTownEvent event) {
@@ -53,7 +58,7 @@ public class TownyListener implements Listener {
         // Check the flag.
         if (!set.testState(wgPlayer, WorldGuardTowny.getTownCreationAllowedFlag())) {
             // Cancel Town creation
-            TownyMessaging.sendErrorMsg(player, "You're not allowed to claim in this region.");
+            TownyMessaging.sendErrorMsg(player, plugin.getDenyclaimMsg());
             event.setCancelled(true);
         }
     }

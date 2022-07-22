@@ -11,13 +11,10 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.Objects;
 
 public class TownyListener implements Listener {
     WorldGuardTowny plugin;
@@ -61,8 +58,7 @@ public class TownyListener implements Listener {
         // Check the flag.
         if (!set.testState(wgPlayer, WorldGuardTowny.getTownCreationAllowedFlag())) {
             // Cancel Town creation
-            String msg = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(plugin.getConfig().getString("language.deny-claim")));
-            TownyMessaging.sendErrorMsg(player, msg);
+            TownyMessaging.sendErrorMsg(player, plugin.getDenyclaimMsg());
             event.setCancelled(true);
         }
     }

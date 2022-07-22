@@ -1,6 +1,6 @@
   name: WorldGuard-Towny
   main: WorldGuardTowny
-  version: '${project.version}'
+  version: ${project.version}
   depend:
     - Towny
     - WorldGuard

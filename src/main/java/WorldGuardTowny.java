@@ -18,7 +18,11 @@ public class WorldGuardTowny extends JavaPlugin {
     public void onEnable() {
         instance = this;
         this.getServer().getPluginManager().
-                registerEvents(new TownyListener(), this);
+                registerEvents(new TownyListener(this), this);
+
+        // Config Initialisation
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
     }
 
     @Override

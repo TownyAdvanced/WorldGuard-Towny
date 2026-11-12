@@ -47,7 +47,7 @@ public class TownyListener implements Listener {
         	return;
 
         // Check the flag.
-        if (!set.testState(wgPlayer, WorldGuardTowny.getTownCreationAllowedFlag())) {
+        if (!set.testState(wgPlayer, WorldGuardTowny.getInstance().getTownCreationAllowedFlag())) {
             // Cancel Town creation
             TownyMessaging.sendErrorMsg(player, plugin.getDenyclaimMsg());
             event.setCancelled(true);
@@ -68,25 +68,37 @@ public class TownyListener implements Listener {
 		if (set == null)
 			return;
 
-		if (set.testState(wgPlayer, WorldGuardTowny.getIgnoresOutlawingFlag())) {
+		if (set.testState(wgPlayer, WorldGuardTowny.getInstance().getIgnoresOutlawingFlag())) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onOutlawTeleport(OutlawTeleportEvent event) {
+		System.out.println("OutlawTeleportEvent");
 		Player player = event.getOutlaw().getPlayer();
-		if (player == null)
+		if (player == null) {
 			return;
+		}
 		LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
 		ApplicableRegionSet set = getApplicableRegionSet(player);
 
-		if (set == null)
+		if (set == null) {
+			System.out.println("OutlawTeleportEvent - Set was Null");
 			return;
-
-		if (set.testState(wgPlayer, WorldGuardTowny.getIgnoresOutlawingFlag())) {
-			event.setCancelled(true);
 		}
+
+		if (WorldGuardTowny.getInstance().getIgnoresOutlawingFlag() == null) {
+			System.out.println("OutlawTeleportEvent - Flag was Null");
+			return;
+		}
+
+		if (set.testState(wgPlayer, WorldGuardTowny.getInstance().getIgnoresOutlawingFlag())) {
+			System.out.println("OutlawTeleportEvent - Cancelling");
+			event.setCancelled(true);
+			return;
+		}
+		System.out.println("OutlawTeleportEvent - Region allows teleports");
 	}
 
 	private ApplicableRegionSet getApplicableRegionSet(Player player) {

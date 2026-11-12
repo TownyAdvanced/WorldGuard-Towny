@@ -3,6 +3,7 @@ import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.event.PreNewTownEvent;
 import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
 import com.palmergames.bukkit.towny.event.resident.ResidentPreJailEvent;
+import com.palmergames.bukkit.towny.event.teleport.OutlawTeleportEvent;
 import com.palmergames.bukkit.towny.object.jail.JailReason;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -59,6 +60,24 @@ public class TownyListener implements Listener {
 			return;
 
 		Player player = event.getResident().getPlayer();
+		if (player == null)
+			return;
+		LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+		ApplicableRegionSet set = getApplicableRegionSet(player);
+
+		if (set == null)
+			return;
+
+		if (set.testState(wgPlayer, WorldGuardTowny.getIgnoresOutlawingFlag())) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onOutlawTeleport(OutlawTeleportEvent event) {
+		Player player = event.getOutlaw().getPlayer();
+		if (player == null)
+			return;
 		LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
 		ApplicableRegionSet set = getApplicableRegionSet(player);
 

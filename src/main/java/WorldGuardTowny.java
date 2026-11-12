@@ -11,17 +11,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class WorldGuardTowny extends JavaPlugin {
 
-    private static StateFlag TOWN_CREATION_ALLOWED_FLAG;
+    private StateFlag TOWN_CREATION_ALLOWED_FLAG;
+    private StateFlag OUTLAW_IGNORE_FLAG;
     public static WorldGuardTowny instance;
     private String denyClaimMsg;
 
-    public static StateFlag getTownCreationAllowedFlag() {
+    public StateFlag getTownCreationAllowedFlag() {
         return TOWN_CREATION_ALLOWED_FLAG;
+    }
+
+    public StateFlag getIgnoresOutlawingFlag() {
+        return OUTLAW_IGNORE_FLAG;
     }
 
     @Override
     public void onEnable() {
-        instance = this;
         this.getServer().getPluginManager().registerEvents(new TownyListener(this), this);
 
         // Config Initialisation
@@ -32,23 +36,30 @@ public class WorldGuardTowny extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        instance = this;
+        getInstance().TOWN_CREATION_ALLOWED_FLAG = registerFlag("town-creation", true);
+        getInstance().OUTLAW_IGNORE_FLAG = registerFlag("ignores-outlawing", false);
+    }
+    
+    private StateFlag registerFlag(String name, boolean def) {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
-
         // Register Flag
         try {
             // Create the town creation flag.
-            StateFlag flag = new StateFlag("town-creation", true);
+            StateFlag flag = new StateFlag(name, def);
             registry.register(flag);
-            TOWN_CREATION_ALLOWED_FLAG = flag;
+            getLogger().info("Registered Flag: " + name + " in WorldGuard.");
+            return flag;
         } catch (FlagConflictException e) {
-            Flag<?> existing = registry.get("town-creation");
+            Flag<?> existing = registry.get(name);
 
             // Happens if a flag with the same name exists.
-            if (existing instanceof StateFlag) {
-                TOWN_CREATION_ALLOWED_FLAG = (StateFlag) existing;
-                getLogger().warning("Found WorldGuard Flag with that matches, overriding it.");
+            if (existing instanceof StateFlag flag) {
+            	getLogger().warning("Found WorldGuard Flag with that matches " + name + ", overriding it.");
+            	return flag;
             } else {
                 getLogger().warning("Towny WorldGuard Flag could not be created:\n" + e.getMessage());
+                return null;
             }
         }
     }

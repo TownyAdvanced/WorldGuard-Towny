@@ -75,7 +75,6 @@ public class TownyListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onOutlawTeleport(OutlawTeleportEvent event) {
-		System.out.println("OutlawTeleportEvent");
 		Player player = event.getOutlaw().getPlayer();
 		if (player == null) {
 			return;
@@ -84,21 +83,17 @@ public class TownyListener implements Listener {
 		ApplicableRegionSet set = getApplicableRegionSet(player);
 
 		if (set == null) {
-			System.out.println("OutlawTeleportEvent - Set was Null");
 			return;
 		}
 
 		if (WorldGuardTowny.getInstance().getIgnoresOutlawingFlag() == null) {
-			System.out.println("OutlawTeleportEvent - Flag was Null");
 			return;
 		}
 
 		if (set.testState(wgPlayer, WorldGuardTowny.getInstance().getIgnoresOutlawingFlag())) {
-			System.out.println("OutlawTeleportEvent - Cancelling");
 			event.setCancelled(true);
 			return;
 		}
-		System.out.println("OutlawTeleportEvent - Region allows teleports");
 	}
 
 	private ApplicableRegionSet getApplicableRegionSet(Player player) {

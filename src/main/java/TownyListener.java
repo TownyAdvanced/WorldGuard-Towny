@@ -2,6 +2,8 @@
 import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.event.PreNewTownEvent;
 import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
+import com.palmergames.bukkit.towny.event.resident.ResidentPreJailEvent;
+import com.palmergames.bukkit.towny.object.jail.JailReason;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
@@ -27,33 +29,21 @@ public class TownyListener implements Listener {
     public void onTownCreate(PreNewTownEvent event) {
         // Get the player.
         Player player = event.getPlayer();
-        validateAction(player, event);
+        validateClaimingAction(player, event);
     }
 
     @EventHandler
     public void onTownClaim(TownPreClaimEvent event) {
         // Get the player.
         Player player = event.getPlayer();
-        validateAction(player, event);
+        validateClaimingAction(player, event);
     }
 
-    public void validateAction(Player player, Cancellable event) {
-        // Convert properties into WorldGuard compatible objects.
-        BlockVector3 loc = BukkitAdapter.asBlockVector(player.getLocation());
-        World world = BukkitAdapter.adapt(player.getWorld());
-        LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
-
-        // Get the regions.
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionManager regions = container.get(world);
-
-        // If there are no regions don't bother.
-        if (regions == null) {
-            return;
-        }
-
-        // Get the regions the player is in.
-        ApplicableRegionSet set = regions.getApplicableRegions(loc);
+    public void validateClaimingAction(Player player, Cancellable event) {
+    	LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+        ApplicableRegionSet set = getApplicableRegionSet(player);
+        if (set == null)
+        	return;
 
         // Check the flag.
         if (!set.testState(wgPlayer, WorldGuardTowny.getTownCreationAllowedFlag())) {
@@ -62,4 +52,40 @@ public class TownyListener implements Listener {
             event.setCancelled(true);
         }
     }
+
+	@EventHandler(ignoreCancelled = true)
+	public void onOutlawKill(ResidentPreJailEvent event) {
+		if (!event.getReason().equals(JailReason.OUTLAW_DEATH))
+			return;
+
+		Player player = event.getResident().getPlayer();
+		LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+		ApplicableRegionSet set = getApplicableRegionSet(player);
+
+		if (set == null)
+			return;
+
+		if (set.testState(wgPlayer, WorldGuardTowny.getIgnoresOutlawingFlag())) {
+			event.setCancelled(true);
+		}
+	}
+
+	private ApplicableRegionSet getApplicableRegionSet(Player player) {
+		// Convert properties into WorldGuard compatible objects.
+		BlockVector3 loc = BukkitAdapter.asBlockVector(player.getLocation());
+		World world = BukkitAdapter.adapt(player.getWorld());
+
+		// Get the regions.
+		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+		RegionManager regions = container.get(world);
+
+		// If there are no regions don't bother.
+		if (regions == null) {
+			return null;
+		}
+
+		// Get the regions the player is in.
+		ApplicableRegionSet set = regions.getApplicableRegions(loc);
+		return set;
+	}
 }

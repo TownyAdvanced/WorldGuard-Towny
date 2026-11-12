@@ -12,11 +12,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WorldGuardTowny extends JavaPlugin {
 
     private static StateFlag TOWN_CREATION_ALLOWED_FLAG;
+    private static StateFlag OUTLAW_IGNORE_FLAG;
     public static WorldGuardTowny instance;
     private String denyClaimMsg;
 
     public static StateFlag getTownCreationAllowedFlag() {
         return TOWN_CREATION_ALLOWED_FLAG;
+    }
+
+    public static StateFlag getIgnoresOutlawingFlag() {
+        return OUTLAW_IGNORE_FLAG;
     }
 
     @Override
@@ -32,21 +37,26 @@ public class WorldGuardTowny extends JavaPlugin {
 
     @Override
     public void onLoad() {
+    	registerFlag("town-creation", TOWN_CREATION_ALLOWED_FLAG);
+    	registerFlag("ignores-outlawing", OUTLAW_IGNORE_FLAG);
+    }
+    
+    private void registerFlag(String name, StateFlag stateFlag) {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
-
         // Register Flag
         try {
             // Create the town creation flag.
-            StateFlag flag = new StateFlag("town-creation", true);
+            StateFlag flag = new StateFlag(name, true);
             registry.register(flag);
-            TOWN_CREATION_ALLOWED_FLAG = flag;
+            stateFlag = flag;
+
         } catch (FlagConflictException e) {
-            Flag<?> existing = registry.get("town-creation");
+            Flag<?> existing = registry.get(name);
 
             // Happens if a flag with the same name exists.
             if (existing instanceof StateFlag) {
-                TOWN_CREATION_ALLOWED_FLAG = (StateFlag) existing;
-                getLogger().warning("Found WorldGuard Flag with that matches, overriding it.");
+            	stateFlag = (StateFlag) existing;
+                getLogger().warning("Found WorldGuard Flag with that matches " + name + ", overriding it.");
             } else {
                 getLogger().warning("Towny WorldGuard Flag could not be created:\n" + e.getMessage());
             }
